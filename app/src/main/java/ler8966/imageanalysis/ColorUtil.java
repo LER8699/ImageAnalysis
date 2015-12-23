@@ -26,6 +26,8 @@ public class ColorUtil {
             for (int j = 0; j < bmp.getWidth(); j++) {
                 float[] f = new float[3];
                 Color.colorToHSV(bmp.getPixel(j, i), f);
+
+                // multiplying saturationv value by 100 for simplicity
                 int sat = (int) (f[1] * 100);
                 if (sat < 15) {
                     buff.append("X ");
