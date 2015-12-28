@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 /* from Orient OpMode */
@@ -15,7 +17,8 @@ import java.io.ByteArrayOutputStream;
 
 public class CameraIntentTestApp extends AppCompatActivity {
 
-    private Uri fileUri;
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 114;
+    protected ImageAnalyst analyst;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,24 +36,42 @@ public class CameraIntentTestApp extends AppCompatActivity {
         Log.d("test", "Activity Started");
     }
 
-    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 114;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("test", "onActivityResult");
         Bundle extras = data.getExtras();
         Bitmap bmp = (Bitmap) extras.get("data");
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        Log.d("test", "byteArray length: " + byteArray.length);
-        Log.d("test", "bitmap width: " + bmp.getWidth());
+
+        analyst = new ImageAnalyst(bmp);
+        analyst.analyzePNGBytes();
 
         //ColorUtil.printByteArray(byteArray);
-        ColorUtil.printPixelSaturationHSV(bmp);
+        //ColorUtil.printPixelSaturationHSV(bmp);
+
+
+        showResponse();
     }
 
+    protected void showResponse() {
+        setContentView(R.layout.activity_main);
+        TextView tv = (TextView) findViewById(R.id.my_message);
+        tv.setText(analyst.getReportMessage());
 
+        ImageView image = (ImageView) findViewById(R.id.imageView1);
+        image.setImageBitmap(analyst.getBitmap());
+
+        ImageView image2 = (ImageView) findViewById(R.id.imageView2);
+        int[] newImage = analyst.swapRedAndBlue();
+        // create bitmap with old bitmap height & width
+        int width = analyst.getBitmap().getWidth();
+        int height = analyst.getBitmap().getHeight();
+        Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        // Set the pixels
+        newBitmap.setPixels(newImage, 0, width, 0, 0, width, height);
+        newBitmap.setHasAlpha(true);
+        image2.setImageBitmap(newBitmap);
+    }
 }
 
 
