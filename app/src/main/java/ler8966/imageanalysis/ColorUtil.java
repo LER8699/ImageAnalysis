@@ -27,9 +27,12 @@ public class ColorUtil {
                 float[] f = new float[3];
                 Color.colorToHSV(bmp.getPixel(j, i), f);
 
-                // multiplying saturationv value by 100 for simplicity
+                // multiplying saturation value by 100 for simplicity
                 int sat = (int) (f[1] * 100);
-                if (sat < 15) {
+                int black = (int) (f[2] * 100);
+                if (black < 10) {
+                    buff.append("| ");
+                } else if (sat < 15) {
                     buff.append("X ");
                 } else {
                     buff.append(". ");
@@ -41,6 +44,14 @@ public class ColorUtil {
             buff.setLength(0);
         }
     }
+
+    public static int[] getColorArray(Bitmap bmp) {
+        int width = bmp.getWidth();
+        int[] pixels = new int[bmp.getHeight() * width];
+        bmp.getPixels(pixels, 0, width, 1, 1, width - 1, bmp.getHeight() - 1);
+        return pixels;
+    }
+
 
 /* Logging cuts off after 4131 characters, clips array
 
