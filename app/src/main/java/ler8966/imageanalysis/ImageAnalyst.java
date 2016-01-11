@@ -62,7 +62,62 @@ public class ImageAnalyst {
         return temp;
     }
 
-    public int[] somewhatSimpleRedDetection() {
+    /**
+     * takes distribution of a color and calculates location
+     * For example: array [0,0,0,1,1,2,2,3,4,10,20,22,34,45] represents a high concentration of
+     * color on the extreme right.
+     * <p/>
+     * This method takes the middle of the distribution and returns how much to the right or left
+     * of the middle the blob is (negative for left, positive for right). It is not weighted as to
+     * the values - maybe later.
+     *
+     * todo - if no red found, it returns center, which is wrong. Need a way to show no red found
+     */
+    public int analyzeDistribution(int[] distribution) {
+        int average = 0;
+        for (int i = 0; i < distribution.length; i++) {
+            average += distribution[i];
+        }
+        average = average / distribution.length;
+
+        // normalize distribution by subtracting average (but not allowing negative numbers. If
+        // subtracting average leads to a negative number, then use 0.
+        for (int i = 0; i < distribution.length; i++) {
+            int val = distribution[i] - average;
+            distribution[i] = val < 0 ? 0 : val;
+        }
+
+        // find first index of red
+        int startIndex = 0;
+        for (int i = 0; i < distribution.length; i++) {
+            if (distribution[i] > 0) {
+                startIndex = i;
+                break;
+            }
+        }
+        // iterate backwards to find lastIndex of red
+        int endIndex = distribution.length - 1;
+        for (int i = distribution.length - 1; i >= startIndex; i--) {
+            if (distribution[i] > 0) {
+                endIndex = i;
+                break;
+            }
+        }
+
+        Log.d("ImageAnalyst", "start/end = " + startIndex + ", " + endIndex);
+        // average start and end indexes
+        int blobMiddle = (startIndex + endIndex) / 2;
+
+        // get how much left or right the blob is
+        // negative will be left, positive will be right
+        int dirAmt = blobMiddle - bmp.getWidth() / 2;
+
+        Log.d("ImageAnalyst", "blobMiddle = " + blobMiddle);
+        Log.d("ImageAnalyst", "bmp middle =  " + bmp.getWidth() / 2);
+        return dirAmt;
+    }
+
+    public int[] getVerticalRedDistribution() {
         int[] distribution = new int[bmp.getWidth()];
         for (int i = 0; i < bmp.getHeight(); i++) {
             for (int j = 0; j < bmp.getWidth(); j++) {
@@ -73,7 +128,7 @@ public class ImageAnalyst {
             }
         }
         Log.d("ImageAnalyst", Arrays.toString(distribution));
-        return null;
+        return distribution;
     }
 
     public int superSimpleRedDetection() {
