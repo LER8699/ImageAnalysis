@@ -62,15 +62,14 @@ public class CameraIntentTestApp extends AppCompatActivity {
         ImageView image = (ImageView) findViewById(R.id.imageView1);
         image.setImageBitmap(analyst.getBitmap());
 
-        analyst.somewhatSimpleRedDetection();
-       /* int i = analyst.superSimpleColorDetection();
+        int i = analyst.analyzeDistribution(analyst.getVerticalRedDistribution());
         if (i < 0) {
-            tv.setText("left");
+            tv.setText("left by " + i);
         } else if (i > 0) {
-            tv.setText("right");
+            tv.setText("right by " + i);
         } else {
             tv.setText("center");
-        }*/
+        }
 
         //fillImageView2(analyst.showFindRed());
 
