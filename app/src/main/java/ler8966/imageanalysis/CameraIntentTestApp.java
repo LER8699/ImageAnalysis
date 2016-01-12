@@ -44,7 +44,7 @@ public class CameraIntentTestApp extends AppCompatActivity {
         Bitmap bmp = (Bitmap) extras.get("data");
 
         analyst = new ImageAnalyst(bmp);
-        analyst.analyzePNGBytes();
+        //analyst.analyzePNGBytes();
 
         //ColorUtil.printByteArray(byteArray);
         //ColorUtil.printPixelSaturationHSV(bmp);
@@ -62,7 +62,9 @@ public class CameraIntentTestApp extends AppCompatActivity {
         ImageView image = (ImageView) findViewById(R.id.imageView1);
         image.setImageBitmap(analyst.getBitmap());
 
-        int i = analyst.analyzeDistribution(analyst.getVerticalRedDistribution());
+        char color = 'R';
+
+        int i = analyst.analyzeDistribution(analyst.getVerticalDistribution(color));
         if (i < 0) {
             tv.setText("left by " + i);
         } else if (i > 0) {
@@ -71,20 +73,30 @@ public class CameraIntentTestApp extends AppCompatActivity {
             tv.setText("center");
         }
 
-        //fillImageView2(analyst.showFindRed());
+        int[] img = ImageAlterer.showVerticalDistributionImage(color, analyst.getBitmap());
+        Bitmap bmp = createBitmap(img);
+        ImageAlterer.drawVerticalLineAt(bmp.getWidth()/2 + i, bmp);
+        fillImageView2(bmp);
 
     }
 
-    protected void fillImageView2(int[] newImage) {
-        ImageView image2 = (ImageView) findViewById(R.id.imageView2);
-
+    protected Bitmap createBitmap(int[] newImage) {
         // create bitmap with old bitmap height & width
         int width = analyst.getBitmap().getWidth();
         int height = analyst.getBitmap().getHeight();
         Bitmap newBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        // Set the pixels
         newBitmap.setPixels(newImage, 0, width, 0, 0, width, height);
         newBitmap.setHasAlpha(true);
+        return newBitmap;
+    }
+
+    protected void fillImageView2(int[] newImage) {
+        Bitmap newBitmap = createBitmap(newImage);
+        fillImageView2(newBitmap);
+    }
+
+    protected void fillImageView2(Bitmap newBitmap) {
+        ImageView image2 = (ImageView) findViewById(R.id.imageView2);
         image2.setImageBitmap(newBitmap);
     }
 }
