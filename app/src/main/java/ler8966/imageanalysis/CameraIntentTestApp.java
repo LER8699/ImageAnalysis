@@ -55,29 +55,38 @@ public class CameraIntentTestApp extends AppCompatActivity {
 
     protected void showResponse() {
         setContentView(R.layout.activity_main);
-        TextView tv = (TextView) findViewById(R.id.my_message);
-        tv.setText(analyst.getReportMessage());
 
         // show the original image
         ImageView image = (ImageView) findViewById(R.id.imageView1);
         image.setImageBitmap(analyst.getBitmap());
 
         char color = 'R';
+        // show altered images at different tolerances
+        createImageView(R.id.tv1, color, 80, R.id.imageView2);
+        createImageView(R.id.tv2, color, 40, R.id.imageView3);
+        createImageView(R.id.tv3, color, 20, R.id.imageView4);
 
-        int i = analyst.analyzeDistribution(analyst.getVerticalDistribution(color));
-        if (i < 0) {
-            tv.setText("left by " + i);
-        } else if (i > 0) {
-            tv.setText("right by " + i);
-        } else {
-            tv.setText("center");
-        }
+    }
 
-        int[] img = ImageAlterer.showVerticalDistributionImage(color, analyst.getBitmap());
+    private void createImageView(int textViewId, char color, int tolerance, int viewId) {
+        int i = analyst.analyzeDistribution(analyst.getVerticalDistribution(color, tolerance));
+        TextView tv = (TextView) findViewById(textViewId);
+        tv.setText(getLocationText(i, tolerance));
+
+        int[] img = ImageAlterer.showVerticalDistributionImage(color, analyst.getBitmap(), tolerance);
         Bitmap bmp = createBitmap(img);
-        ImageAlterer.drawVerticalLineAt(bmp.getWidth()/2 + i, bmp);
-        fillImageView2(bmp);
+        ImageAlterer.drawVerticalLineAt(bmp.getWidth() / 2 + i, bmp);
+        fillImageView(bmp, viewId);
+    }
 
+    public String getLocationText(int i, int tolerance) {
+        if (i < 0) {
+            return "t = " + tolerance + "; left by " + i;
+        } else if (i > 0) {
+            return "t = " + tolerance + "; right by " + i;
+        } else {
+            return "t = " + tolerance + "; center";
+        }
     }
 
     protected Bitmap createBitmap(int[] newImage) {
@@ -90,13 +99,13 @@ public class CameraIntentTestApp extends AppCompatActivity {
         return newBitmap;
     }
 
-    protected void fillImageView2(int[] newImage) {
+    protected void fillImageView(int[] newImage, int viewId) {
         Bitmap newBitmap = createBitmap(newImage);
-        fillImageView2(newBitmap);
+        fillImageView(newBitmap, viewId);
     }
 
-    protected void fillImageView2(Bitmap newBitmap) {
-        ImageView image2 = (ImageView) findViewById(R.id.imageView2);
+    protected void fillImageView(Bitmap newBitmap, int viewId) {
+        ImageView image2 = (ImageView) findViewById(viewId);
         image2.setImageBitmap(newBitmap);
     }
 }
