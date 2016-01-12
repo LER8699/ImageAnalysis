@@ -6,6 +6,10 @@ import android.util.Log;
 
 public class ColorUtil {
 
+    // not sure if these should be final
+    public static final int BLUE_THRESHOLD = 40; // lower is looser (more will show up as blue)
+    public static final int RED_THRESHOLD = 70; // lower is looser (more will show up as red)
+
     public static void printPixelColorsHSV(Bitmap bmp) {
         for (int i = 0; i < bmp.getHeight(); i++) {
             StringBuffer buff = new StringBuffer();
@@ -15,7 +19,7 @@ public class ColorUtil {
                 buff.append(getHSVColor(f[0]) + " ");
                 //buff.append(f[0] + ", ");
             }
-            Log.d("test", buff.toString());
+            Log.d("ColorUtil", buff.toString());
             buff.setLength(0);
         }
     }
@@ -52,19 +56,6 @@ public class ColorUtil {
         return pixels;
     }
 
-
-/* Logging cuts off after 4131 characters, clips array
-
-    public static void printByteArray(byte[] byteArray) {
-        StringBuffer buff = new StringBuffer();
-        for (int i = 0; i < byteArray.length; i++) {
-            buff.append(byteArray[i] + ", ");
-        }
-        buff.setLength(buff.length()-1);
-        Log.d("byteArray", "[" + buff.toString() + "]");
-    }
-*/
-
     public static String getHSVColor(float f) {
         if (f < 32) {
             return "RED";
@@ -82,6 +73,30 @@ public class ColorUtil {
             return "PURPLE";
         } else {
             return "PINK";
+        }
+    }
+
+    public static boolean isRed(int b) {
+        int blue = Color.blue(b);
+        int red = Color.red(b);
+        int green = Color.green(b);
+        int blueGreenAvg = (blue + green) / 2;
+        if ((red - blueGreenAvg) > RED_THRESHOLD) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isBlue(int b) {
+        int blue = Color.blue(b);
+        int red = Color.red(b);
+        int green = Color.green(b);
+        int redGreenAvg = (red + green) / 2;
+        if ((blue - redGreenAvg) > BLUE_THRESHOLD) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
