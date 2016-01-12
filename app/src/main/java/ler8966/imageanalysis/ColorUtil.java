@@ -6,9 +6,8 @@ import android.util.Log;
 
 public class ColorUtil {
 
-    // not sure if these should be final
-    public static final int BLUE_THRESHOLD = 40; // lower is looser (more will show up as blue)
-    public static final int RED_THRESHOLD = 70; // lower is looser (more will show up as red)
+    //public static final int BLUE_THRESHOLD = 40; // lower is looser (more will show up as blue)
+    //public static final int RED_THRESHOLD = 70; // lower is looser (more will show up as red)
 
     public static void printPixelColorsHSV(Bitmap bmp) {
         for (int i = 0; i < bmp.getHeight(); i++) {
@@ -76,24 +75,32 @@ public class ColorUtil {
         }
     }
 
-    public static boolean isRed(int b) {
+    public static boolean isRed(int b, int threshold) {
         int blue = Color.blue(b);
         int red = Color.red(b);
         int green = Color.green(b);
         int blueGreenAvg = (blue + green) / 2;
-        if ((red - blueGreenAvg) > RED_THRESHOLD) {
+        if ((red - blueGreenAvg) > threshold) {
             return true;
         } else {
             return false;
         }
     }
 
+  /*  public static boolean isRed(int b) {
+        return isRed(b, RED_THRESHOLD);
+    }
+
     public static boolean isBlue(int b) {
+        return isRed(b, BLUE_THRESHOLD);
+    }*/
+
+    public static boolean isBlue(int b, int threshold) {
         int blue = Color.blue(b);
         int red = Color.red(b);
         int green = Color.green(b);
         int redGreenAvg = (red + green) / 2;
-        if ((blue - redGreenAvg) > BLUE_THRESHOLD) {
+        if ((blue - redGreenAvg) > threshold) {
             return true;
         } else {
             return false;
