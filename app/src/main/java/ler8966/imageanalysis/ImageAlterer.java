@@ -22,12 +22,12 @@ public class ImageAlterer {
         return temp;
     }
 
-    public static int[] showFindRed(Bitmap bmp) {
+    public static int[] showFindRed(Bitmap bmp, int tolerance) {
         int[] colors = ColorUtil.getColorArray(bmp);
         int[] temp = new int[colors.length];
         for (int i = 0; i < colors.length; i++) {
             int b = colors[i];
-            if (ColorUtil.isRed(b)) {
+            if (ColorUtil.isRed(b, tolerance)) {
                 temp[i] = Color.rgb(255, 0, 0);
             } else {
                 temp[i] = Color.rgb(0, 0, 0);
@@ -36,7 +36,7 @@ public class ImageAlterer {
         return temp;
     }
 
-    public static int[] showVerticalDistributionImage(char rb, Bitmap bmp) throws IllegalArgumentException {
+    public static int[] showVerticalDistributionImage(char rb, Bitmap bmp, int tolerance) throws IllegalArgumentException {
         int[] temp = new int[bmp.getWidth() * bmp.getHeight()];
         int counter = 0;
         for (int i = 0; i < bmp.getHeight(); i++) {
@@ -44,11 +44,11 @@ public class ImageAlterer {
                 temp[counter] = Color.rgb(235, 235, 235);
                 int b = bmp.getPixel(j, i);
                 if (rb == 'R') {
-                    if (ColorUtil.isRed(b)) {
+                    if (ColorUtil.isRed(b, tolerance)) {
                         temp[counter] = Color.rgb(255, 0, 0);
                     }
                 } else if (rb == 'B') {
-                    if (ColorUtil.isBlue(b)) {
+                    if (ColorUtil.isBlue(b, tolerance)) {
                         temp[counter] = Color.rgb(0, 0, 255);
                     }
                 } else {
