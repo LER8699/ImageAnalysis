@@ -35,22 +35,9 @@ public class ImageAnalyst {
      */
 
     public int analyzeDistribution(int[] distribution) {
-      /*  int average = 0;
-        for (int i = 0; i < distribution.length; i++) {
-            average += distribution[i];
-        }
-        average = average / distribution.length;
-        Log.d("ImageAnalyst", "average = " + average);
-        // normalize distribution by subtracting average (but not allowing negative numbers. If
-        // subtracting average leads to a negative number, then use 0.
-        for (int i = 0; i < distribution.length; i++) {
-            int val = distribution[i] - average;
-           // Log.d("ImageAnalyst", "changing from " + distribution[i] + " to " + val);
-            distribution[i] = val < 0 ? 0 : val;
-        }
-        Log.d("ImageAnalyst", "Normalized Distribution: ");
-        Log.d("ImageAnalyst", Arrays.toString(distribution));
-        */
+        // todo -- should normalize ?
+        normalize(distribution);
+
         // find first index of red
         int startIndex = 0;
         for (int i = 0; i < distribution.length; i++) {
@@ -81,17 +68,39 @@ public class ImageAnalyst {
         return dirAmt;
     }
 
-    public int[] getVerticalDistribution(char rb) throws IllegalArgumentException {
+    private void normalize(int[] distribution) {
+        int average = 0;
+        for (int i = 0; i < distribution.length; i++) {
+            average += distribution[i];
+        }
+        average = average / distribution.length;
+        Log.d("ImageAnalyst", "average = " + average);
+        // normalize distribution by subtracting average (but not allowing negative numbers. If
+        // subtracting average leads to a negative number, then use 0.
+        for (int i = 0; i < distribution.length; i++) {
+            int val = distribution[i] - average;
+           // Log.d("ImageAnalyst", "changing from " + distribution[i] + " to " + val);
+            distribution[i] = val < 0 ? 0 : val;
+        }
+        Log.d("ImageAnalyst", "Normalized Distribution: ");
+        Log.d("ImageAnalyst", Arrays.toString(distribution));
+    }
+
+    /* creates array of size=bithmap width. Holds how many pixels in that vertical line are red or
+    blue. So distribution[0] will equal how many pixels are red/blue in the first vertical line of
+    the image.
+     */
+    public int[] getVerticalDistribution(char rb, int tolerance) throws IllegalArgumentException {
         int[] distribution = new int[bmp.getWidth()];
         for (int i = 0; i < bmp.getHeight(); i++) {
             for (int j = 0; j < bmp.getWidth(); j++) {
                 int b = bmp.getPixel(j, i);
                 if (rb == 'R') {
-                    if (ColorUtil.isRed(b)) {
+                    if (ColorUtil.isRed(b, tolerance)) {
                         distribution[j]++;
                     }
                 } else if (rb == 'B') {
-                    if (ColorUtil.isBlue(b)) {
+                    if (ColorUtil.isBlue(b, tolerance)) {
                         distribution[j]++;
                     }
                 } else {
@@ -104,23 +113,24 @@ public class ImageAnalyst {
         return distribution;
     }
 
-    public int superSimpleRedDetection() {
-        return superSimpleColorDetection('R');
+    // convenience methods
+    public int superSimpleRedDetection(int tolerance) {
+        return superSimpleColorDetection('R', tolerance);
     }
 
 
-    public int superSimpleBlueDetection() {
-        return superSimpleColorDetection('B');
+    public int superSimpleBlueDetection(int tolerance) {
+        return superSimpleColorDetection('B', tolerance);
     }
 
-    protected int superSimpleColorDetection(char rb) throws IllegalArgumentException {
+    protected int superSimpleColorDetection(char rb, int tolerance) throws IllegalArgumentException {
         int left = 0;
         int right = 0;
 
         for (int i = 0; i < bmp.getHeight(); i++) {
             for (int j = 0; j < bmp.getWidth() / 2; j++) {
                 int b = bmp.getPixel(j, i);
-                if (ColorUtil.isRed(b)) {
+                if (ColorUtil.isRed(b, tolerance)) {
                     left++;
                 }
             }
@@ -130,11 +140,11 @@ public class ImageAnalyst {
             for (int j = bmp.getWidth() / 2; j < bmp.getWidth(); j++) {
                 int b = bmp.getPixel(j, i);
                 if (rb == 'R') {
-                    if (ColorUtil.isRed(b)) {
+                    if (ColorUtil.isRed(b, tolerance)) {
                         right++;
                     }
                 } else if (rb == 'B') {
-                    if (ColorUtil.isBlue(b)) {
+                    if (ColorUtil.isBlue(b, tolerance)) {
                         right++;
                     }
                 } else {
