@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.io.ByteArrayOutputStream;
 /* from Orient OpMode */
@@ -19,10 +21,13 @@ public class CameraIntentTestApp extends AppCompatActivity {
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 114;
     protected ImageAnalyst analyst;
+    private char color = 'R';
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
         //setContentView(R.layout.main);
 
         // create Intent to take a picture and return control to the calling application
@@ -34,7 +39,24 @@ public class CameraIntentTestApp extends AppCompatActivity {
         // start the image capture Intent
         startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         Log.d("test", "Activity Started");
+
+        ToggleButton toggle = (ToggleButton) findViewById(R.id.tb1);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    color = 'R';
+                    showResponse();
+                } else {
+                    color = 'B';
+                    showResponse();
+                }
+            }
+        });
+
+
     }
+
+
 
 
     @Override
@@ -54,13 +76,11 @@ public class CameraIntentTestApp extends AppCompatActivity {
     }
 
     protected void showResponse() {
-        setContentView(R.layout.activity_main);
 
         // show the original image
         ImageView image = (ImageView) findViewById(R.id.imageView1);
         image.setImageBitmap(analyst.getBitmap());
 
-        char color = 'R';
         // show altered images at different tolerances
         createImageView(R.id.tv1, color, 80, R.id.imageView2);
         createImageView(R.id.tv2, color, 40, R.id.imageView3);
