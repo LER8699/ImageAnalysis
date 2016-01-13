@@ -8,7 +8,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -22,6 +25,8 @@ public class CameraIntentTestApp extends AppCompatActivity {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 114;
     protected ImageAnalyst analyst;
     private char color = 'R';
+    private int tolerance1 = 80;
+    private int tolerance2 = 40;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,11 +57,27 @@ public class CameraIntentTestApp extends AppCompatActivity {
                 }
             }
         });
+        EditText editText = (EditText) findViewById(R.id.tolerance1);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                tolerance1 = Integer.parseInt(String.valueOf(v.getText()));
+                showResponse();
+                return false;
+            }
+        });
 
+        editText = (EditText) findViewById(R.id.tolerance2);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                tolerance2 = Integer.parseInt(String.valueOf(v.getText()));
+                showResponse();
+                return false;
+            }
+        });
 
     }
-
-
 
 
     @Override
@@ -66,11 +87,10 @@ public class CameraIntentTestApp extends AppCompatActivity {
         Bitmap bmp = (Bitmap) extras.get("data");
 
         analyst = new ImageAnalyst(bmp);
-        //analyst.analyzePNGBytes();
 
+        //analyst.analyzePNGBytes();
         //ColorUtil.printByteArray(byteArray);
         //ColorUtil.printPixelSaturationHSV(bmp);
-
 
         showResponse();
     }
@@ -82,9 +102,8 @@ public class CameraIntentTestApp extends AppCompatActivity {
         image.setImageBitmap(analyst.getBitmap());
 
         // show altered images at different tolerances
-        createImageView(R.id.tv1, color, 80, R.id.imageView2);
-        createImageView(R.id.tv2, color, 40, R.id.imageView3);
-        createImageView(R.id.tv3, color, 20, R.id.imageView4);
+        createImageView(R.id.tv1, color, tolerance1, R.id.imageView2);
+        createImageView(R.id.tv2, color, tolerance2, R.id.imageView3);
 
     }
 
